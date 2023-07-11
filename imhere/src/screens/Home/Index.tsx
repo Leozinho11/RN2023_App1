@@ -1,17 +1,36 @@
-import { Text, View, TextInput, TouchableOpacity, FlatList } from 'react-native';
+import { useState } from "react";
+import { Text, View, TextInput, TouchableOpacity, FlatList, Alert } from 'react-native';
 import { styles } from './styles';
 import { Participant } from '../../components/Participant';
 
 export function Home() {
+  const [participants, setParticipants] = useState<string[]>([]);
+  const [participantName, setParticipantName] = useState("")
 
-  const participants = ["Leo", "Nil", "Nelia", "Bia", "Vitor", "Gustavo", "Vanessa", "Mariah", "Poliana", "Samuel", "Eber", "Matheus"];
+
 
   function handleParticipantAdd() {
-    console.log("Você clicou no botão de adicionar")
+    if (participants.includes(participantName)) {
+      return Alert.alert("Participante Existe", "Já existe um participante na lista com esse nome!")
+    }
+
+    setParticipants(prevState => [...prevState, participantName]);
+    setParticipantName("");
   }
 
   function handleParticpantRemove(name: string) {
-    console.log(`Você clicou em remover participante ${name}`);
+
+
+    Alert.alert("Remover", `Remover participante ${name}?`, [
+      {
+        text: "Sim",
+        onPress: () => setParticipants(prevState => prevState.filter(participant => participant !== name))
+      },
+      {
+        text: "Não",
+        style: "cancel"
+      }
+    ])
 
   }
 
@@ -31,6 +50,8 @@ export function Home() {
           style={styles.input}
           placeholder='Nome do participante'
           placeholderTextColor='#6B6B6B'
+          onChangeText={setParticipantName}
+          value={participantName}
         />
 
         <TouchableOpacity style={styles.button} onPress={handleParticipantAdd}>
@@ -47,7 +68,7 @@ export function Home() {
           <Participant
             key={item}
             name={item}
-            onRemove={() => handleParticpantRemove("Leo")} />
+            onRemove={() => handleParticpantRemove(item)} />
         )}
         showsVerticalScrollIndicator={false}
         ListEmptyComponent={() => (
